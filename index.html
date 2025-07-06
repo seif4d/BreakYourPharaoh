@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>يوم عاشوراء | رحلة على طريق النور</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* 🎨 CSS Styles - تنسيقات رحلة النور 🎨 */
+        :root {
+            --darkness-bg: #0b071a; /* سواد الليل العميق */
+            --dawn-start: #231934; /* بداية الفجر البنفسجي */
+            --dawn-end: #ff8c42;   /* وهج الشمس البرتقالي */
+            --text-color: #e8e8e8;
+            --path-color: #ffd70044; /* لون المسار المتوهج */
+            --primary-gold: #ffc400; /* لون الذهب للنصوص الهامة */
+            --glow-gold: #ffc40033;
+            --header-font: 'Amiri Quran', serif; /* خط روحاني للعناوين */
+            --body-font: 'Tajawal', sans-serif;
+        }
+
+        /* ✨ Global & Scaffolding Styles - التنسيقات العامة والهيكلية ✨ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--body-font);
+            color: var(--text-color);
+            line-height: 1.8;
+            background-color: var(--darkness-bg);
+            /* سيتم التحكم بتدرج الفجر عبر JS */
+            background-image: 
+                radial-gradient(circle at 50% 150%, var(--dawn-start) 0%, var(--darkness-bg) 70%),
+                radial-gradient(circle at 50% 150%, var(--dawn-end) 0%, transparent 70%);
+            background-repeat: no-repeat;
+            background-size: 0% 0%; /* يبدأ مخفياً */
+            transition: background-size 1s ease-out;
+            overflow-x: hidden;
+        }
+        
+        /* 🔥 Background Stars - نجوم متلألئة في الخلفية 🔥 */
+        #stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: radial-gradient(white, rgba(255,255,255,.2) 1px, transparent 20px),
+                              radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 15px);
+            background-size: 300px 300px, 200px 200px;
+            animation: move-stars 150s linear infinite;
+        }
+        @keyframes move-stars {
+            from {transform: translateY(0);}
+            to {transform: translateY(-500px);}
+        }
+
+        /* ⚔️ The Journey Path - مسار الرحلة المتوهج ⚔️ */
+        #journey-path {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--path-color), #ffffff11);
+            box-shadow: 0 0 10px 2px var(--path-color);
+            z-index: 1;
+        }
+        /* الجزء المتحرك الذي "يرسم" المسار */
+        #path-progress {
+            width: 100%;
+            height: 0; /* يبدأ بصفر ويزداد عبر JS */
+            background: linear-gradient(to bottom, var(--primary-gold), var(--path-color));
+            box-shadow: 0 0 15px 4px var(--primary-gold);
+            transition: height 0.2s ease-out;
+        }
+
+        /* 🏛️ Timeline Container & Milestones - حاوية المحطات 🏛️ */
+        .timeline-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 8rem 2rem;
+        }
+
+        .milestone {
+            padding: 2rem;
+            position: relative;
+            width: 45%;
+            margin-bottom: 5rem;
+            background: rgba(11, 7, 26, 0.6);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 10px;
+            /* Animation setup */
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+        }
+
+        /*  محطات على اليمين واليسار */
+        .milestone:nth-child(odd) {
+            margin-left: 55%;
+            transform: translateX(100px);
+        }
+        .milestone:nth-child(even) {
+            margin-left: 0;
+            transform: translateX(-100px);
+        }
+
+        .milestone.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* الخط الذي يربط المحطة بالمسار */
+        .milestone::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            width: 10%;
+            height: 2px;
+            background: var(--path-color);
+        }
+        .milestone:nth-child(odd)::before { right: 100%; }
+        .milestone:nth-child(even)::before { left: 100%; }
+        
+        /* ✍️ Typography Styles - تنسيقات النصوص ✍️ */
+        h1, h2, blockquote {
+            font-family: var(--header-font);
+            color: var(--primary-gold);
+        }
+
+        .main-header h1 {
+            font-size: clamp(3rem, 10vw, 5rem);
+            text-shadow: 0 0 20px var(--glow-gold);
+        }
+        
+        .main-header p { font-size: clamp(1.2rem, 5vw, 1.5rem); }
+
+        .milestone h2 {
+            font-size: clamp(1.8rem, 6vw, 2.2rem);
+            margin-bottom: 1rem;
+        }
+
+        .milestone p, .milestone li {
+            font-size: clamp(1rem, 4vw, 1.1rem);
+            line-height: 1.9;
+        }
+
+        blockquote {
+            background: transparent;
+            border-right: 3px solid var(--primary-gold);
+            padding: 1rem 1.5rem;
+            margin: 1.5rem 0;
+            font-size: clamp(1.1rem, 5vw, 1.3rem);
+            text-shadow: 0 0 10px var(--glow-gold);
+        }
+
+        .final-milestone {
+            width: 100%;
+            margin-left: 0;
+            text-align: center;
+        }
+        .final-milestone h2 { font-size: clamp(2.5rem, 8vw, 4rem); border: none; }
+        .final-milestone::before { display: none; }
+
+
+        /* 📱 Responsive Design - تصميم متجاوب 📱 */
+        @media (max-width: 900px) {
+            .milestone, .milestone:nth-child(even), .milestone:nth-child(odd) {
+                width: 100%;
+                margin-left: 0;
+                transform: translateY(50px);
+            }
+            .milestone.visible { transform: translateY(0); }
+            
+            /* ربط المحطات بالمسار من جهة اليسار على الشاشات الصغيرة */
+            #journey-path { left: 20px; }
+            .milestone::before { left: -2rem; top: 35px; width: 2rem; }
+            .milestone:nth-child(odd)::before { right: auto; }
+            .timeline-container { padding-left: 3.5rem; }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <div id="stars-container"></div>
+    <div id="journey-path"><div id="path-progress"></div></div>
+
+    <main class="timeline-container">
+
+        <section class="milestone main-header visible">
+            <h1>🗿<br>يوم عاشوراء</h1>
+            <p>«حين تُسقط فرعون وتشق بحرك الخاص»</p>
+        </section>
+
+        <section class="milestone">
+            <p>أمس كان عاشوراء. يومٌ لم يكن عابرًا في سجل الزمن، بل كان أشبه بانفجار كوني مزّق أستار الواقع وأعاد رسمه. يومٌ نجا فيه موسى ومن معه، وسقط فيه فرعون وجنوده، ليتغيّر تاريخ الأرض إلى الأبد.</p>
+            <p>لكن… ما الذي يمنعك أن تجعل هذا اليوم يومك أنت؟ لحظةً مفصلية، تنقضُّ فيها على ماضيك لتسقط طغاته، وتشق بحرك، وتولد في الجانب الآخر إنسانًا حرًا، بلا قيود ولا أصفاد.</p>
+        </section>
+        
+        <section class="milestone">
+            <h2>👑 فرعونك الحقيقي: ماضيك الذي يطغى عليك</h2>
+            <p>إن فرعون الذي طغى في التاريخ ليس سوى رمز لفرعون آخر يسكنك. فرعونك أنت هو ماضيك الثقيل الذي يجثم على صدرك. هو تاريخك الأسود، أخطاؤك، ذنوبك، انكساراتك التي شقّت قلبك وتركت فيه ندوبًا لا تندمل. هو الذي صنع لك سردية بائسة عن نفسك، تحاصرك كقيد حديدي.</p>
+        </section>
+
+        <section class="milestone">
+            <h2>🗡️ جنوده: أخطاءك القديمة</h2>
+            <p>وجنود فرعون… هم أخطاء ماضيك نفسها. قراراتك الحمقاء، العلاقات المسمومة، العادات السامة التي تغلغلت فيك حتى صرت تظنها جزءًا منك. إنهم هم الذين صاغوا واقعك الحالي، وسلخوا عنك قدرك الأصيل، حتى صدّقت أنك هذا الهش المكسور.</p>
+        </section>
+
+        <section class="milestone">
+            <h2>🌊 البحر: الحاجز بينك وبين حريتك</h2>
+            <p>البحر الذي وقف موسى أمامه هو ذاته بحرٌ يواجهك اليوم. لكنه ليس من ماءٍ وملح، بل من ظلمات داخلك. هو خوفك من المجهول، من الفشل، من الوحدة. والعجيب أن هذا البحر لا ينشق إلا إذا ضربته. ولو بقيت على الشاطئ تنتظر… فلن تعبره أبدًا.</p>
+        </section>
+
+        <section class="milestone">
+            <h2>🪄 العصا: إرادتك وإيمانك الصارخ</h2>
+            <p>عصاك أنت هي قرارك بأن تنسف سردية ماضيك كله. أن تقول:</p>
+            <blockquote>«لست أسيرًا لما حدث لي. لست أخطاءي. لست صدى لخيبات قديمة. أنا بداية جديدة، صفحة بيضاء، خلق آخر اليوم.»</blockquote>
+            <p>عصاك هي دموعك حين ترفع يديك إلى السماء فتصرخ: «كلا إن معي ربي سيهدين».</p>
+        </section>
+
+        <section class="milestone">
+            <h2>💥 اليوم يومك: يوم نسف السردية</h2>
+            <blockquote>«اليوم أسقط فرعون ماضيّ، اليوم غرق جنوده في لجج بحري، اليوم ولدت من جديد.»</blockquote>
+            <p>من هذا اليوم تبدأ في تحطيم كل صوتٍ في رأسك يخبرك أنك لن تتغير. اليوم تهدم معبد الماضي الذي كنت تسجد فيه لآلهة الألم والندم. اليوم تفتح عينيك على أرض جديدة.</p>
+        </section>
+
+        <section class="milestone">
+            <h2>🌅 الضفة الأخرى: حيث تعيد صياغة نفسك</h2>
+            <p>وحين تعبر… حين تنجو من البحر ويغرق فرعونك وجنوده وراءك… ستقف في صمت، على ضفة جديدة، وتتنفس هواء حريتك لأول مرة. هناك ستبني نفسك لبنة لبنة، بعيدًا عن هيمنة الماضي. هناك ستكتب قصتك بيدك. هناك ستعرف حقًا من تكون.</p>
+        </section>
+
+        <section class="milestone final-milestone">
+            <h2>«اليوم كسرت قيدي»</h2>
+            <p>اكتبها… علقها في قلبك كما يُعلّق المحاربون شرفهم على جدران معابدهم. واذهب. فقد فتحت لك الأقدار الباب... فلا تتأخر 🖤🔥</p>
+        </section>
+
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // 🎬 كشف العناصر عند الوصول إليها 
+            const milestones = document.querySelectorAll('.milestone');
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                root: null,
+                threshold: 0.1, // تظهر المحطة عند رؤية 10% منها
+            });
+            milestones.forEach(ms => observer.observe(ms));
+
+
+            // ✨ تحديث المسار المضيء والفجر عند التمرير ✨
+            const pathProgress = document.getElementById('path-progress');
+            const body = document.body;
+
+            const handleScroll = () => {
+                // حساب نسبة التمرير في الصفحة
+                const scrollableHeight = document.documentElement.scrollHeight - window.innerHeight;
+                const scrollPercent = (window.scrollY / scrollableHeight);
+
+                // 1. تحديث طول المسار المضيء
+                pathProgress.style.height = `${window.scrollY + (window.innerHeight * 0.8)}px`;
+
+                // 2. التحكم في ظهور الفجر تدريجياً
+                if (scrollPercent > 0.4) { // يبدأ الفجر بالظهور بعد 40% من الصفحة
+                    // نحسب نسبة الظهور بحيث تكتمل عند نهاية الصفحة
+                    const dawnVisibility = (scrollPercent - 0.4) / 0.6; 
+                    const dawnSize = Math.min(dawnVisibility * 250, 250); // يكبر حتى يصل 250%
+                    body.style.backgroundSize = `${dawnSize}% ${dawnSize}%, ${dawnSize * 0.7}% ${dawnSize * 0.7}%`;
+                } else {
+                    body.style.backgroundSize = `0% 0%`;
+                }
+            };
+            
+            window.addEventListener('scroll', handleScroll, { passive: true });
+            // التشغيل مرة عند التحميل لضمان العرض الصحيح عند إعادة تحميل الصفحة في المنتصف
+            handleScroll();
+        });
+    </script>
+</body>
+</html>
